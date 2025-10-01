@@ -175,7 +175,7 @@ class MainActivity : AppCompatActivity() {
             dataSet.colors = listOf(
                 Color.parseColor("#FFB74D"), // Orange for Protein
                 Color.parseColor("#AED581"), // Green for Carbs
-                Color.parseColor("#4FC3F7")  // Blue for Fat
+                Color.parseColor("#FF0000")  // Red for Fat
             )
 
             dataSet.sliceSpace = 3f

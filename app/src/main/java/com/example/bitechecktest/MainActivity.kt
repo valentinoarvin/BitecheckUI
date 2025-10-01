@@ -16,7 +16,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
         setSupportActionBar(binding.toolbar)
 
-        // Load the HomeFragment by default when the app starts
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
             binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
@@ -27,7 +26,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // This logic is now handled by the fragment's own lifecycle
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -38,7 +36,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupNavigation() {
         val navBinding = binding.bottomNavigation
-        // The placeholder is for spacing and is not clickable
         navBinding.bottomNavigationView.menu.findItem(R.id.nav_placeholder).isEnabled = false
 
         navBinding.bottomNavigationView.setOnItemSelectedListener { item ->
@@ -53,12 +50,8 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // The FAB still launches an Activity, which is fine!
         navBinding.fab.setOnClickListener {
             val intent = Intent(this, AddEditFoodActivity::class.java)
-            // NOTE: The result will now be handled by HomeFragment
-            // We need a way to launch this from the fragment. For now, this will
-            // add the food, but the list will refresh when you navigate back to home.
             startActivity(intent)
         }
     }

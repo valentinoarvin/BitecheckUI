@@ -25,7 +25,7 @@ class FoodAdapter(
 
         holder.itemView.setOnLongClickListener {
             onDeleteClicked(food)
-            true // Consume the event
+            true
         }
     }
 

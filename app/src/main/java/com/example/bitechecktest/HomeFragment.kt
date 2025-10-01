@@ -25,43 +25,27 @@ import androidx.appcompat.app.AppCompatActivity
 
 class HomeFragment : Fragment() {
 
-    // View Binding setup for Fragments
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var foodAdapter: FoodAdapter
     private val foodList = mutableListOf<FoodEntry>()
 
-    // The ActivityResultLauncher to get data back from AddEditFoodActivity
-    // In HomeFragment.kt
-
     private val addFoodResultLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // This is the corrected logic
             val data: Intent? = result.data
 
-            // 1. Unpack the new food data from the result Intent
             val name = data?.getStringExtra(AddEditFoodActivity.EXTRA_FOOD_NAME) ?: "No Name"
             val calories = data?.getIntExtra(AddEditFoodActivity.EXTRA_CALORIES, 0) ?: 0
             val protein = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_PROTEIN, 0.0) ?: 0.0
             val carbs = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_CARBS, 0.0) ?: 0.0
             val fat = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_FAT, 0.0) ?: 0.0
-
-            // 2. Create the new FoodEntry object
             val newFood = FoodEntry(name, calories, protein, carbs, fat)
-
-            // 3. Add the new food to your list
             foodList.add(newFood)
-
-            // 4. Save the newly updated list to storage
             saveData()
-
-            // 5. Refresh the UI to show the new item
             updateUI()
-
-            // You can also notify the adapter directly for a smoother animation
             foodAdapter.notifyItemInserted(foodList.size - 1)
         }
     }
@@ -78,14 +62,11 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "BiteCheck"
 
-        // All the setup logic now happens here
         setupRecyclerView()
         setupPieChart()
         loadData()
         updateUI()
 
-        // We need to find the FAB from the parent activity's view
-        // and set its listener here, because this fragment knows what to do.
         activity?.findViewById<FloatingActionButton>(R.id.fab)?.setOnClickListener {
             val intent = Intent(requireActivity(), AddEditFoodActivity::class.java)
             addFoodResultLauncher.launch(intent)
@@ -94,11 +75,8 @@ class HomeFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null // Important to avoid memory leaks
+        _binding = null
     }
-
-    // --- All of your helper functions are below ---
-    // Note the use of `requireActivity()` or `requireContext()` instead of `this`
 
     private fun saveData() {
         val sharedPreferences = requireActivity().getSharedPreferences("BiteCheckPrefs", Context.MODE_PRIVATE)

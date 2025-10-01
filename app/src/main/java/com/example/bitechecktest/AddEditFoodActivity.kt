@@ -34,12 +34,25 @@ class AddEditFoodActivity : AppCompatActivity() {
         }
 
         binding.btnCamera.setOnClickListener {
-            val intent = Intent(this, ScanFoodActivity::class.java)
+            // Create an intent to open MainActivity
+            val intent = Intent(this, MainActivity::class.java).apply {
+                // Add extra data to tell MainActivity to show the ScanFragment
+                putExtra("NAVIGATE_TO", "SCAN_FRAGMENT")
+                // Flags to bring an existing MainActivity to the front instead of creating a new one
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
             startActivity(intent)
+            finish() // Close this activity
         }
         binding.btnAiChat.setOnClickListener {
-            val intent = Intent(this, AiChatActivity::class.java)
+            // Create an intent to open MainActivity
+            val intent = Intent(this, MainActivity::class.java).apply {
+                // Add extra data to tell MainActivity to show the AiChatFragment
+                putExtra("NAVIGATE_TO", "AI_CHAT_FRAGMENT")
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
             startActivity(intent)
+            finish() // Close this activity
         }
     }
 

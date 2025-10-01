@@ -1,217 +1,65 @@
 package com.example.bitechecktest
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
-import android.view.View
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AlertDialog
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.fragment.app.Fragment
 import com.example.bitechecktest.databinding.ActivityMainBinding
-import com.github.mikephil.charting.data.PieData
-import com.github.mikephil.charting.data.PieDataSet
-import com.github.mikephil.charting.data.PieEntry
-import com.github.mikephil.charting.formatter.PercentFormatter
-import com.google.android.material.snackbar.Snackbar
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    private lateinit var foodAdapter: FoodAdapter
-    private val foodList = mutableListOf<FoodEntry>()
-
-    private val addFoodResultLauncher = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult()
-    ) { result ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val data: Intent? = result.data
-            val name = data?.getStringExtra(AddEditFoodActivity.EXTRA_FOOD_NAME) ?: "No Name"
-            val calories = data?.getIntExtra(AddEditFoodActivity.EXTRA_CALORIES, 0) ?: 0
-            val protein = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_PROTEIN, 0.0) ?: 0.0
-            val carbs = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_CARBS, 0.0) ?: 0.0
-            val fat = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_FAT, 0.0) ?: 0.0
-
-            val newFood = FoodEntry(name, calories, protein, carbs, fat)
-            foodList.add(newFood)
-            foodAdapter.notifyItemInserted(foodList.size - 1)
-
-            updateUI()
-            saveData()
-        }
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.toolbar)
 
-        setupRecyclerView()
-        setupPieChart()
-        loadData()
-        updateUI()
-
-        val navBinding = binding.bottomNavigation
-        NavigationHandler.setup(this, navBinding.bottomNavigationView, navBinding.fab)
-
-        navBinding.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
-
-        navBinding.fab.setOnClickListener {
-            val intent = Intent(this, AddEditFoodActivity::class.java)
-            addFoodResultLauncher.launch(intent)
+        // Load the HomeFragment by default when the app starts
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())
+            binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
         }
+
+        setupNavigation()
     }
 
     override fun onResume() {
         super.onResume()
-        binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
+        // This logic is now handled by the fragment's own lifecycle
     }
 
-    private fun loadData() {
-        val sharedPreferences = getSharedPreferences("BiteCheckPrefs", Context.MODE_PRIVATE)
-        val gson = Gson()
-
-        val json = sharedPreferences.getString("food_list_key", null)
-
-        val type = object : TypeToken<MutableList<FoodEntry>>() {}.type
-
-        if (json != null) {
-            val loadedList: MutableList<FoodEntry> = gson.fromJson(json, type)
-            foodList.clear()
-            foodList.addAll(loadedList)
-        }
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.fragment_container, fragment)
+            .commit()
     }
 
-    private fun saveData() {
-        val sharedPreferences = getSharedPreferences("BiteCheckPrefs", Context.MODE_PRIVATE)
-        val editor = sharedPreferences.edit()
+    private fun setupNavigation() {
+        val navBinding = binding.bottomNavigation
+        // The placeholder is for spacing and is not clickable
+        navBinding.bottomNavigationView.menu.findItem(R.id.nav_placeholder).isEnabled = false
 
-        val gson = Gson()
-        val json = gson.toJson(foodList)
-
-        editor.putString("food_list_key", json)
-        editor.apply()
-    }
-
-    private fun setupRecyclerView() {
-        foodAdapter = FoodAdapter(foodList) { foodEntry ->
-            showDeleteConfirmationDialog(foodEntry)
-        }
-        binding.recyclerView.apply {
-            layoutManager = LinearLayoutManager(this@MainActivity)
-            adapter = foodAdapter
-        }
-    }
-
-    private fun showDeleteConfirmationDialog(foodEntry: FoodEntry) {
-        AlertDialog.Builder(this)
-            .setTitle("Delete Entry")
-            .setMessage("Are you sure you want to delete '${foodEntry.name}'?")
-            .setIcon(android.R.drawable.ic_dialog_alert)
-            .setPositiveButton("Delete") { _, _ ->
-                val position = foodList.indexOf(foodEntry)
-                if (position != -1) {
-                    val removedFood = foodList.removeAt(position)
-                    foodAdapter.notifyItemRemoved(position)
-
-                    updateUI()
-                    saveData()
-
-                    Snackbar.make(binding.root, "${removedFood.name} deleted", Snackbar.LENGTH_LONG)
-                        .setAction("Undo") {
-                            foodList.add(position, removedFood)
-                            foodAdapter.notifyItemInserted(position)
-
-                            updateUI()
-                            saveData()
-                        }.show()
-                }
+        navBinding.bottomNavigationView.setOnItemSelectedListener { item ->
+            val fragment: Fragment = when (item.itemId) {
+                R.id.nav_home -> HomeFragment()
+                R.id.nav_log -> FoodLogFragment()
+                R.id.nav_scan -> ScanFragment()
+                R.id.nav_chat -> AiChatFragment()
+                else -> HomeFragment()
             }
-            .setNegativeButton("Cancel", null)
-            .show()
-    }
+            loadFragment(fragment)
+            true
+        }
 
-    private fun updateUI() {
-        updateSummary()
-        checkEmptyState()
-    }
-
-    private fun checkEmptyState() {
-        if (foodList.isEmpty()) {
-            binding.tvEmptyState.visibility = View.VISIBLE
-            binding.recyclerView.visibility = View.GONE
-        } else {
-            binding.tvEmptyState.visibility = View.GONE
-            binding.recyclerView.visibility = View.VISIBLE
+        // The FAB still launches an Activity, which is fine!
+        navBinding.fab.setOnClickListener {
+            val intent = Intent(this, AddEditFoodActivity::class.java)
+            // NOTE: The result will now be handled by HomeFragment
+            // We need a way to launch this from the fragment. For now, this will
+            // add the food, but the list will refresh when you navigate back to home.
+            startActivity(intent)
         }
     }
-
-    private fun updateSummary() {
-        val totalCalories = foodList.sumOf { it.calories }
-        val totalProtein = foodList.sumOf { it.protein }
-        val totalCarbs = foodList.sumOf { it.carbs }
-        val totalFat = foodList.sumOf { it.fat }
-
-        binding.tvTotalCalories.text = "$totalCalories kcal"
-
-        val entries = ArrayList<PieEntry>()
-        if (totalProtein > 0) entries.add(PieEntry(totalProtein.toFloat(), "Protein"))
-        if (totalCarbs > 0) entries.add(PieEntry(totalCarbs.toFloat(), "Carbs"))
-        if (totalFat > 0) entries.add(PieEntry(totalFat.toFloat(), "Fat"))
-
-        if (entries.isEmpty()) {
-            binding.pieChart.visibility = View.GONE
-            binding.llChartPlaceholder.visibility = View.VISIBLE
-            binding.pieChart.clear()
-        } else {
-            binding.pieChart.visibility = View.VISIBLE
-            binding.llChartPlaceholder.visibility = View.GONE
-
-            val dataSet = PieDataSet(entries, "Macros")
-            dataSet.colors = listOf(
-                Color.parseColor("#FFB74D"), // Orange for Protein
-                Color.parseColor("#AED581"), // Green for Carbs
-                Color.parseColor("#FF0000")  // Red for Fat
-            )
-
-            dataSet.sliceSpace = 3f
-
-            dataSet.valueTextColor = Color.WHITE
-            dataSet.valueTextSize = 12f
-            dataSet.valueFormatter = PercentFormatter(binding.pieChart)
-
-            val pieData = PieData(dataSet)
-            binding.pieChart.data = pieData
-            binding.pieChart.setUsePercentValues(true)
-
-            binding.pieChart.animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
-
-            binding.pieChart.invalidate()
-        }
-    }
-
-    private fun setupPieChart() {
-        binding.pieChart.apply {
-            isDrawHoleEnabled = true
-            holeRadius = 58f
-            transparentCircleRadius = 61f
-            setHoleColor(Color.TRANSPARENT)
-            description.isEnabled = false
-            legend.isEnabled = false
-            setDrawEntryLabels(false)
-            setTouchEnabled(false)
-
-            centerText = "Macros"
-            setCenterTextColor(Color.parseColor("#A0A0A0")) // text_secondary color
-            setCenterTextSize(10f)
-
-            // pie chart animation
-            animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
-        }
-    }
-
 }

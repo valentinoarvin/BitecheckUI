@@ -23,7 +23,6 @@ class FoodAdapter(
         holder.binding.tvCalories.text = "${food.calories} kcal"
         holder.binding.tvMacros.text = "P: ${food.protein}g  C: ${food.carbs}g  F: ${food.fat}g"
 
-        // Set a long click listener for the delete action
         holder.itemView.setOnLongClickListener {
             onDeleteClicked(food)
             true // Consume the event

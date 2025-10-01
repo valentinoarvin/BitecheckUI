@@ -18,12 +18,10 @@ class AiChatActivity : AppCompatActivity() {
 
         setupRecyclerView()
 
-        // Set up the close button to finish the activity
         binding.toolbar.setNavigationOnClickListener {
             finish()
         }
 
-        // Set up the send button
         binding.btnSend.setOnClickListener {
             sendMessage()
         }
@@ -40,19 +38,14 @@ class AiChatActivity : AppCompatActivity() {
     private fun sendMessage() {
         val messageText = binding.etChatInput.text.toString()
         if (messageText.isNotBlank()) {
-            // 1. Add user's message to the list
             messageList.add(ChatMessage(messageText, Sender.USER))
 
-            // 2. Add the hardcoded AI response
             messageList.add(ChatMessage("Placeholder AI response", Sender.AI))
 
-            // 3. Notify the adapter that two new items were added
             chatAdapter.notifyItemRangeInserted(messageList.size - 2, 2)
 
-            // 4. Scroll to the new message
             binding.recyclerViewChat.scrollToPosition(messageList.size - 1)
 
-            // 5. Clear the input box
             binding.etChatInput.text.clear()
         }
     }

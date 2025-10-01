@@ -44,8 +44,6 @@ object NavigationHandler {
                 else -> false
             }
         }
-
-        // The fab.setOnClickListener has been REMOVED from here
     }
 
     private fun launchActivity(

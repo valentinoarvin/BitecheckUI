@@ -24,7 +24,6 @@ class FoodLogActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // This ensures the correct icon is highlighted every time the screen is visible
         binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_log).isChecked = true
     }
 }

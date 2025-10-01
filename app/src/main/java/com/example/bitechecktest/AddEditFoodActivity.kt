@@ -43,8 +43,6 @@ class AddEditFoodActivity : AppCompatActivity() {
         }
     }
 
-    // This function correctly packages the data and sends it back.
-    // It was already correct, just wasn't being used.
     private fun saveFood() {
         val foodName = binding.etFoodName.text.toString()
         val calories = binding.etCalories.text.toString().toIntOrNull() ?: 0

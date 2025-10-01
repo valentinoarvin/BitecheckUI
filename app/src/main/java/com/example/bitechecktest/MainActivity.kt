@@ -68,7 +68,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // This ensures the correct icon is highlighted every time the screen is visible
         binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
     }
 
@@ -76,14 +75,11 @@ class MainActivity : AppCompatActivity() {
         val sharedPreferences = getSharedPreferences("BiteCheckPrefs", Context.MODE_PRIVATE)
         val gson = Gson()
 
-        // Get the saved JSON string
         val json = sharedPreferences.getString("food_list_key", null)
 
-        // Define the type of our list for Gson
         val type = object : TypeToken<MutableList<FoodEntry>>() {}.type
 
         if (json != null) {
-            // If we have saved data, convert it back from JSON to our list
             val loadedList: MutableList<FoodEntry> = gson.fromJson(json, type)
             foodList.clear()
             foodList.addAll(loadedList)
@@ -98,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         val json = gson.toJson(foodList)
 
         editor.putString("food_list_key", json)
-        editor.apply() // Use apply() to save changes in the background
+        editor.apply()
     }
 
     private fun setupRecyclerView() {
@@ -123,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                     foodAdapter.notifyItemRemoved(position)
 
                     updateUI()
-                    saveData() // <<< SAVE after deleting a food
+                    saveData()
 
                     Snackbar.make(binding.root, "${removedFood.name} deleted", Snackbar.LENGTH_LONG)
                         .setAction("Undo") {
@@ -131,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                             foodAdapter.notifyItemInserted(position)
 
                             updateUI()
-                            saveData() // <<< SAVE after undoing the delete
+                            saveData()
                         }.show()
                 }
             }
@@ -144,7 +140,6 @@ class MainActivity : AppCompatActivity() {
         checkEmptyState()
     }
 
-    // NEW: Function to check if the list is empty and show/hide the message
     private fun checkEmptyState() {
         if (foodList.isEmpty()) {
             binding.tvEmptyState.visibility = View.VISIBLE
@@ -155,7 +150,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // NEW: Function to calculate totals and update the summary card
     private fun updateSummary() {
         val totalCalories = foodList.sumOf { it.calories }
         val totalProtein = foodList.sumOf { it.protein }
@@ -179,12 +173,11 @@ class MainActivity : AppCompatActivity() {
 
             val dataSet = PieDataSet(entries, "Macros")
             dataSet.colors = listOf(
-                Color.parseColor("#4FC3F7"), // Blue for Protein
-                Color.parseColor("#FFB74D"), // Orange for Carbs
-                Color.parseColor("#AED581")  // Green for Fat
+                Color.parseColor("#FFB74D"), // Orange for Protein
+                Color.parseColor("#AED581"), // Green for Carbs
+                Color.parseColor("#4FC3F7")  // Blue for Fat
             )
 
-            // NEW: Add space between the pie slices for a cleaner look
             dataSet.sliceSpace = 3f
 
             dataSet.valueTextColor = Color.WHITE
@@ -195,14 +188,12 @@ class MainActivity : AppCompatActivity() {
             binding.pieChart.data = pieData
             binding.pieChart.setUsePercentValues(true)
 
-            // NEW: Refresh the animation every time data changes
             binding.pieChart.animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
 
-            binding.pieChart.invalidate() // Refresh the chart
+            binding.pieChart.invalidate()
         }
     }
 
-    // NEW: Function to set initial styling for the pie chart
     private fun setupPieChart() {
         binding.pieChart.apply {
             isDrawHoleEnabled = true
@@ -214,12 +205,11 @@ class MainActivity : AppCompatActivity() {
             setDrawEntryLabels(false)
             setTouchEnabled(false)
 
-            // NEW: Add and style the text in the center of the donut
             centerText = "Macros"
             setCenterTextColor(Color.parseColor("#A0A0A0")) // text_secondary color
             setCenterTextSize(10f)
 
-            // NEW: Add a subtle animation
+            // pie chart animation
             animateY(1000, com.github.mikephil.charting.animation.Easing.EaseInOutQuad)
         }
     }

@@ -2,15 +2,15 @@ package com.example.bitechecktest
 
 import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.bitechecktest.databinding.ActivityMainBinding
-import androidx.activity.viewModels
+
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
     private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -20,16 +20,30 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
 
         if (savedInstanceState == null) {
+            // Load HomeFragment by default
             loadFragment(HomeFragment())
-            binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked =
-                true
         }
 
         setupNavigation()
+        handleIntentNavigation(intent)
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntentNavigation(intent)
+    }
+
+    // This runs every time the activity comes into view, fixing the highlight bug
     override fun onResume() {
         super.onResume()
+        // Update the highlight based on the currently visible fragment
+        val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+        when (currentFragment) {
+            is HomeFragment -> binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
+            is FoodLogFragment -> binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_log).isChecked = true
+            is ScanFragment -> binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_scan).isChecked = true
+            is AiChatFragment -> binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_chat).isChecked = true
+        }
     }
 
     private fun loadFragment(fragment: Fragment) {
@@ -37,6 +51,19 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, fragment)
             .commit()
     }
+
+    private fun handleIntentNavigation(intent: Intent?) {
+        when (intent?.getStringExtra("NAVIGATE_TO")) {
+            "SCAN_FRAGMENT" -> {
+                loadFragment(ScanFragment())
+            }
+            "AI_CHAT_FRAGMENT" -> {
+                loadFragment(AiChatFragment())
+            }
+        }
+    }
+
+    // The duplicate `loadFragment` function has been REMOVED
 
     private fun setupNavigation() {
         val navBinding = binding.bottomNavigation
@@ -55,18 +82,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         navBinding.fab.setOnClickListener {
-            // Find the currently active fragment
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
-
-            // Check if the active fragment is the HomeFragment
             if (currentFragment is HomeFragment) {
-                // If it is, use its special launcher to get an immediate result
                 val intent = Intent(this, AddEditFoodActivity::class.java)
                 currentFragment.addFoodResultLauncher.launch(intent)
             } else {
-                // If we're on any other screen, just launch the activity normally.
-                // The data will still be saved, and the home screen will be updated
-                // the next time the user navigates to it. This prevents the crash.
                 val intent = Intent(this, AddEditFoodActivity::class.java)
                 startActivity(intent)
             }

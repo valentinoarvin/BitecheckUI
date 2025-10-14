@@ -7,13 +7,22 @@
     android:background="@color/background_dark"
     tools:context=".FoodLogFragment">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewLogs"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="8dp"
+        tools:listitem="@layout/item_daily_log"/>
+
     <TextView
+        android:id="@+id/tvLogEmptyState"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="Food Log History\nComing Soon!"
+        android:text="No logs yet!\nLog your first day from the home screen."
         android:textColor="@color/text_secondary"
-        android:textSize="20sp" />
+        android:textSize="18sp"
+        android:visibility="gone"/>
 
 </FrameLayout>

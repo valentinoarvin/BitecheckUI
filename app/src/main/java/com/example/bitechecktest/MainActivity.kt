@@ -5,10 +5,13 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.example.bitechecktest.databinding.ActivityMainBinding
+import androidx.activity.viewModels
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+
+    private val sharedViewModel: SharedViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -18,7 +21,8 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             loadFragment(HomeFragment())
-            binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked = true
+            binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_home).isChecked =
+                true
         }
 
         setupNavigation()
@@ -51,8 +55,21 @@ class MainActivity : AppCompatActivity() {
         }
 
         navBinding.fab.setOnClickListener {
-            val intent = Intent(this, AddEditFoodActivity::class.java)
-            startActivity(intent)
+            // Find the currently active fragment
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragment_container)
+
+            // Check if the active fragment is the HomeFragment
+            if (currentFragment is HomeFragment) {
+                // If it is, use its special launcher to get an immediate result
+                val intent = Intent(this, AddEditFoodActivity::class.java)
+                currentFragment.addFoodResultLauncher.launch(intent)
+            } else {
+                // If we're on any other screen, just launch the activity normally.
+                // The data will still be saved, and the home screen will be updated
+                // the next time the user navigates to it. This prevents the crash.
+                val intent = Intent(this, AddEditFoodActivity::class.java)
+                startActivity(intent)
+            }
         }
     }
 }

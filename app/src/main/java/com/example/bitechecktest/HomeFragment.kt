@@ -24,7 +24,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 import androidx.fragment.app.activityViewModels
 import androidx.appcompat.app.AppCompatActivity
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 class HomeFragment : Fragment() {
 
@@ -51,6 +50,7 @@ class HomeFragment : Fragment() {
             saveData()
             updateUI()
             foodAdapter.notifyItemInserted(foodList.size - 1)
+            Snackbar.make(binding.root, "$name logged successfully!", Snackbar.LENGTH_SHORT).show()
         }
     }
 

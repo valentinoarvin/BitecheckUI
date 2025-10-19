@@ -24,7 +24,7 @@ class MainActivity : AppCompatActivity() {
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
         if (result.resultCode == Activity.RESULT_OK) {
-            // Unpack the new food data
+            // Unpack new food data
             val data: Intent? = result.data
             val name = data?.getStringExtra(AddEditFoodActivity.EXTRA_FOOD_NAME) ?: "No Name"
             val calories = data?.getIntExtra(AddEditFoodActivity.EXTRA_CALORIES, 0) ?: 0
@@ -33,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             val fat = data?.getDoubleExtra(AddEditFoodActivity.EXTRA_FAT, 0.0) ?: 0.0
             val newFood = FoodEntry(name, calories, protein, carbs, fat)
 
-            // Load the current list, add the new item, and save it back to storage
+            // Load current list, add new item, save it back to storage
             saveFoodInBackground(newFood)
             Snackbar.make(binding.fragmentContainer, "$name logged successfully!", Snackbar.LENGTH_SHORT).show()
         }
@@ -58,7 +58,6 @@ class MainActivity : AppCompatActivity() {
         handleIntentNavigation(intent)
     }
 
-    // This runs every time the activity comes into view, fixing the highlight bug
     override fun onResume() {
         super.onResume()
         // Update the highlight based on the currently visible fragment
@@ -86,10 +85,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun logout() {
-        // Navigate back to LoginActivity
+        // back to LoginActivity
         val intent = Intent(this, LoginActivity::class.java)
 
-        // IMPORTANT: These flags clear the entire back stack, so the user can't
         // press the back button to get back into the app after logging out.
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
@@ -112,7 +110,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    // The duplicate `loadFragment` function has been REMOVED
 
     private fun setupNavigation() {
         val navBinding = binding.bottomNavigation
@@ -135,10 +132,8 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, AddEditFoodActivity::class.java)
 
             if (currentFragment is HomeFragment) {
-                // If on Home, use the fragment's launcher for an instant UI update
                 currentFragment.addFoodResultLauncher.launch(intent)
             } else {
-                // If on any other screen, use the activity's new launcher
                 addFoodLauncher.launch(intent)
             }
         }

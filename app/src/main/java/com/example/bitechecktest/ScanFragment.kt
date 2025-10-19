@@ -24,14 +24,12 @@ class ScanFragment : Fragment() {
 
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
 
-    // This launcher handles the result of the permission request.
+    // request permission
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
             if (isGranted) {
-                // Permission is granted. Start the camera.
                 startCamera()
             } else {
-                // Permission denied. Show a message.
                 Toast.makeText(requireContext(), "Camera permission is required to use this feature.", Toast.LENGTH_SHORT).show()
             }
         }
@@ -48,7 +46,7 @@ class ScanFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         (requireActivity() as AppCompatActivity).supportActionBar?.title = "Scan Food"
 
-        // Check for camera permission and start the camera if granted.
+        // check camera permission
         checkPermissionAndStartCamera()
     }
 
@@ -58,11 +56,9 @@ class ScanFragment : Fragment() {
                 requireContext(),
                 Manifest.permission.CAMERA
             ) == PackageManager.PERMISSION_GRANTED -> {
-                // The permission is already granted.
                 startCamera()
             }
             else -> {
-                // The permission has not been granted. Request it.
                 requestPermissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }
@@ -72,27 +68,21 @@ class ScanFragment : Fragment() {
         cameraProviderFuture = ProcessCameraProvider.getInstance(requireContext())
 
         cameraProviderFuture.addListener({
-            // Get the CameraProvider.
             val cameraProvider = cameraProviderFuture.get()
 
-            // Build the Preview use case.
             val preview = Preview.Builder().build().also {
                 it.setSurfaceProvider(binding.viewFinder.surfaceProvider)
             }
 
-            // Select the back camera as a default.
             val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
             try {
-                // Unbind everything before rebinding.
                 cameraProvider.unbindAll()
 
-                // Bind the use cases to the camera.
                 cameraProvider.bindToLifecycle(
                     this, cameraSelector, preview
                 )
             } catch (exc: Exception) {
-                // Handle exceptions.
                 Toast.makeText(requireContext(), "Failed to start camera.", Toast.LENGTH_SHORT).show()
             }
 

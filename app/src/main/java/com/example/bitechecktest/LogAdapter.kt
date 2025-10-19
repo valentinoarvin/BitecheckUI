@@ -11,7 +11,7 @@ class LogAdapter(
     private var logList: List<DailyLog>,
     private val onLogClicked: (DailyLog) -> Unit,
     private val onUndoClicked: () -> Unit,
-    private val onLogLongClicked: (DailyLog) -> Unit // The required long-click listener
+    private val onLogLongClicked: (DailyLog) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     companion object {
@@ -19,13 +19,11 @@ class LogAdapter(
         private const val VIEW_TYPE_NORMAL = 1
     }
 
-    // ViewHolder for the normal log items
     inner class LogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dateText: TextView = itemView.findViewById(R.id.tvLogDate)
         val caloriesText: TextView = itemView.findViewById(R.id.tvTotalCaloriesLog)
     }
 
-    // ViewHolder for the top item with the Undo button
     inner class RecentLogViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val dateText: TextView = itemView.findViewById(R.id.tvLogDate)
         val caloriesText: TextView = itemView.findViewById(R.id.tvTotalCaloriesLog)

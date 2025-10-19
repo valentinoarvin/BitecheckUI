@@ -18,15 +18,13 @@ import com.google.gson.reflect.TypeToken
 
 class FoodLogFragment : Fragment() {
 
-    // --- View Binding Setup ---
     private var _binding: FragmentFoodLogBinding? = null
     private val binding get() = _binding!!
 
-    // --- Properties ---
     private val sharedViewModel: SharedViewModel by activityViewModels()
     private lateinit var historicalLogs: MutableList<DailyLog>
     private lateinit var logAdapter: LogAdapter
-    // Duplicate declarations were removed.
+    // Duplicate declarations removed
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,7 +43,7 @@ class FoodLogFragment : Fragment() {
     private fun setupRecyclerView() {
         loadHistoricalLogs()
 
-        // Corrected the typo and added back the empty state logic
+        // typo corrected
         if (historicalLogs.isEmpty()) {
             binding.recyclerViewLogs.visibility = View.GONE
             binding.tvLogEmptyState.visibility = View.VISIBLE

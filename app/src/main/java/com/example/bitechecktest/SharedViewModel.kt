@@ -6,8 +6,6 @@ import androidx.lifecycle.ViewModel
 
 class SharedViewModel : ViewModel() {
 
-    // LiveData to hold the log that the user wants to undo.
-    // It's nullable so we can clear it after it's been used.
     private val _undoneLog = MutableLiveData<DailyLog?>()
     val undoneLog: LiveData<DailyLog?> = _undoneLog
 

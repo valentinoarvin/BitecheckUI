@@ -77,17 +77,14 @@ class HomeFragment : Fragment() {
             }
         }
 
-        // --- ADD THIS OBSERVER ---
         sharedViewModel.undoneLog.observe(viewLifecycleOwner) { undoneLog ->
-            // This code will run when an undo action is triggered
             if (undoneLog != null) {
                 foodList.clear()
                 foodList.addAll(undoneLog.entries)
-                saveData() // Save the restored list
-                updateUI() // Refresh the UI
+                saveData()
+                updateUI()
                 foodAdapter.notifyDataSetChanged()
 
-                // Consume the event so it doesn't happen again
                 sharedViewModel.consumeUndoneLog()
             }
         }
@@ -99,14 +96,11 @@ class HomeFragment : Fragment() {
     }
 
     private fun logTodaysEntries() {
-        // 1. Get today's date
         val sdf = SimpleDateFormat("EEEE, MMM dd, yyyy", Locale.getDefault())
         val currentDate = sdf.format(Date())
 
-        // 2. Create the new daily log
         val newLog = DailyLog(date = currentDate, entries = ArrayList(foodList))
 
-        // 3. Load existing historical logs
         val sharedPreferences = requireActivity().getSharedPreferences("BiteCheckPrefs", Context.MODE_PRIVATE)
         val gson = Gson()
         val jsonLogs = sharedPreferences.getString("daily_logs_key", null)
@@ -117,19 +111,16 @@ class HomeFragment : Fragment() {
             mutableListOf()
         }
 
-        // 4. Add the new log and save the updated history
-        historicalLogs.add(0, newLog) // Add to the top of the list
+        historicalLogs.add(0, newLog)
         val editor = sharedPreferences.edit()
         editor.putString("daily_logs_key", gson.toJson(historicalLogs))
         editor.apply()
 
-        // 5. Clear the current day's list
         foodList.clear()
-        foodAdapter.notifyDataSetChanged() // Update the adapter
-        saveData() // This will save the now-empty list for the home screen
-        updateUI() // This will refresh the summary card and show the empty state
+        foodAdapter.notifyDataSetChanged()
+        saveData()
+        updateUI()
 
-        // 6. Give user feedback with the corrected anchor
         Snackbar.make(binding.root, "Today's entries logged!", Snackbar.LENGTH_SHORT).show()
     }
 
@@ -200,11 +191,11 @@ private fun checkEmptyState() {
     if (foodList.isEmpty()) {
         binding.tvEmptyState.visibility = View.VISIBLE
         binding.recyclerView.visibility = View.GONE
-        binding.btnLogToday.visibility = View.GONE // Hide the button
+        binding.btnLogToday.visibility = View.GONE
     } else {
         binding.tvEmptyState.visibility = View.GONE
         binding.recyclerView.visibility = View.VISIBLE
-        binding.btnLogToday.visibility = View.VISIBLE // Show the button
+        binding.btnLogToday.visibility = View.VISIBLE
     }
 }
 

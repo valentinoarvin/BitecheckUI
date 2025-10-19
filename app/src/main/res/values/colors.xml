@@ -4,7 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="background_dark">#161616</color>
     <color name="surface_dark">#1E1E1E</color>
-    <color name="primary_accent">#4FC3F7</color> <color name="text_primary">#E0E0E0</color>
+    <color name="primary_accent">#4FC3F7</color>
+    <color name="text_primary">#E0E0E0</color>
     <color name="text_secondary">#A0A0A0</color>
     <color name="divider">#2A2A2A</color>
     <color name="delete_red">#EF5350</color>

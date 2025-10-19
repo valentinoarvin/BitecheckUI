@@ -14,7 +14,6 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Set listeners for all login buttons
         binding.btnLogin.setOnClickListener { login() }
         binding.btnGoogle.setOnClickListener { login() }
         binding.btnFacebook.setOnClickListener { login() }
@@ -22,11 +21,11 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun login() {
-        // Create an intent to open the main part of the app
+        // intent to open main
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
 
-        // This prevents the user from pressing the back button to return here after logging in.
+        // biar user gabisa pencet back abis login
         finish()
     }
 }

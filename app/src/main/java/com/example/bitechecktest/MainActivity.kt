@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import com.example.bitechecktest.databinding.ActivityMainBinding
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import android.widget.ImageView
 
 
 class MainActivity : AppCompatActivity() {
@@ -68,6 +69,30 @@ class MainActivity : AppCompatActivity() {
             is ScanFragment -> binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_scan).isChecked = true
             is AiChatFragment -> binding.bottomNavigation.bottomNavigationView.menu.findItem(R.id.nav_chat).isChecked = true
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: android.view.Menu): Boolean {
+        menuInflater.inflate(R.menu.main_toolbar_menu, menu)
+
+        val logoutItem = menu.findItem(R.id.action_logout)
+
+        val logoutButton = logoutItem.actionView?.findViewById<ImageView>(R.id.iv_logout)
+
+        logoutButton?.setOnClickListener {
+            logout()
+        }
+
+        return true
+    }
+
+    private fun logout() {
+        // Navigate back to LoginActivity
+        val intent = Intent(this, LoginActivity::class.java)
+
+        // IMPORTANT: These flags clear the entire back stack, so the user can't
+        // press the back button to get back into the app after logging out.
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        startActivity(intent)
     }
 
     private fun loadFragment(fragment: Fragment) {

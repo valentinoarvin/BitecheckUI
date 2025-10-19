@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Layer 1: The white circle background.
+         This will fill the entire space (e.g., 48dp x 48dp). -->
+    <item
+        android:width="48dp"
+        android:height="48dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/white" />
+        </shape>
+    </item>
+
+    <!-- Layer 2: Your logout icon.
+         We define a smaller size (e.g., 24dp) and center it. -->
+    <item
+        android:width="35dp"
+        android:height="35dp"
+        android:gravity="center"
+        android:drawable="@drawable/ic_logout" />
+
+</layer-list>

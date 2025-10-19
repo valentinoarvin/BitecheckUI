@@ -18,6 +18,11 @@ class LoginActivity : AppCompatActivity() {
         binding.btnGoogle.setOnClickListener { login() }
         binding.btnFacebook.setOnClickListener { login() }
         binding.btnx.setOnClickListener { login() }
+        binding.tvSignUp.setOnClickListener {
+            // start the SignUpActivity, LoginActivity not finish
+            val intent = Intent(this, SignUpActivity::class.java)
+            startActivity(intent)
+        }
     }
 
     private fun login() {
